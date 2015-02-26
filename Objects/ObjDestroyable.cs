@@ -3,10 +3,11 @@ using System.Collections;
 
 public class ObjDestroyable : MonoBehaviour
 {
-	public AudioClip deathSound;
-	public AudioClip injureSound;
+	public AudioClip[] deathSound;
+	public AudioClip[] injureSound;
 
-	float maxHealth = 100;
+	[HideInInspector]
+	protected float maxHealth = 100;
 	public float health = 100;
 
 	public void Start()
@@ -28,9 +29,9 @@ public class ObjDestroyable : MonoBehaviour
 	// Used to perform actions upon being marked for removal
 	public virtual void OnDeath()
 	{
-		if(deathSound != null)
+		if(deathSound != null && deathSound.Length > 0)
 		{
-			AudioSource.PlayClipAtPoint(deathSound, this.transform.position);
+			AudioSource.PlayClipAtPoint(deathSound[Random.Range(0, deathSound.Length - 1)], this.transform.position);
 		}
 	}
 
@@ -52,9 +53,9 @@ public class ObjDestroyable : MonoBehaviour
 	public virtual void AttackObj(GameObject attacker, DamageType type, float damage)
 	{
 		health -= damage;
-		if(injureSound != null)
+		if(injureSound != null && injureSound.Length > 0)
 		{
-			AudioSource.PlayClipAtPoint(injureSound, this.transform.position);
+			AudioSource.PlayClipAtPoint(injureSound[Random.Range(0, injureSound.Length - 1)], this.transform.position);
 		}
 	}
 

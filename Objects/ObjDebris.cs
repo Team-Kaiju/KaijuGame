@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(Rigidbody))]
 public class ObjDebris : MonoBehaviour
 {
 	public float despawnTime = 10;
-	float creationTime = 0F;
+	[HideInInspector]
+	public float creationTime = 0F;
 
 	// Use this for initialization
 	void Start ()

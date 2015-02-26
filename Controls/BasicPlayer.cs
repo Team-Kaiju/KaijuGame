@@ -8,8 +8,13 @@ public class BasicPlayer : MonoBehaviour
 	public float moveSpeed = 10F;
 	public float jumpForce = 10F;
 	public float decelFactor = 0.01F;
+	public float jumpCooldown = 1F;
+	float curJmpCool = 0F;
 	int punchTick = 0;
 	Vector3 punchPos;
+	public float gravity = 1F;
+	[HideInInspector]
+	public bool onGround = false;
 
 	// Use this for initialization
 	void Start()
@@ -30,7 +35,11 @@ public class BasicPlayer : MonoBehaviour
 		Vector3 moveDirection = (hSpeed * right + vSpeed * forward).normalized;
 
 		moveDirection *= moveSpeed;
+		this.rigidbody.AddForce(Vector3.down * gravity);
 		this.rigidbody.velocity = Vector3.Lerp(this.rigidbody.velocity, new Vector3(moveDirection.x, this.rigidbody.velocity.y, moveDirection.z), decelFactor);
+		this.rigidbody.angularVelocity = Vector3.zero;
+
+		onGround = Physics.Raycast(transform.position + (Vector3.up * 0.5F), Vector3.down, 3F);
 
 		if(moveDirection.magnitude > 0.1F && !Input.GetButton("Fire2"))
 		{
@@ -40,9 +49,13 @@ public class BasicPlayer : MonoBehaviour
 			this.transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(forward), 0.1F);
 		}
 		
-		if (Input.GetButtonDown ("Jump"))
+		if (Input.GetButtonDown ("Jump") && onGround && curJmpCool <= 0F)
 		{
-			this.rigidbody.AddForce(new Vector3(0F, jumpForce, 0F), ForceMode.Impulse);
+			curJmpCool = jumpCooldown;
+			this.rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+		} else if(onGround && curJmpCool > 0F)
+		{
+			curJmpCool -= Time.deltaTime;
 		}
 
 		// Simple punch script. Will be replaced later when a proper model with animations is implemented
@@ -52,8 +65,9 @@ public class BasicPlayer : MonoBehaviour
 			rArmCol.renderer.enabled = true;
 			rArmCol.collider.enabled = true;
 			punchTick--;
-		} else if(Input.GetButtonDown ("Fire1"))
+		} else if(Input.GetButton ("Fire1"))
 		{
+			rArmCol.collider.enabled = false;
 			punchTick = 10;
 		} else
 		{
