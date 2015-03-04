@@ -4,7 +4,7 @@ using System.Collections;
 public class GameManager : MonoBehaviour {
 	[HideInInspector]
 	public int totalScore = 0;
-	int[] targetScore = new int[]{2500, 10000, 50000};
+	public int[] targetScores = new int[]{2500, 10000, 50000};
 	public float timeLimit = 60 * 5; // Time limit in seconds. Default 5 minutes
 
 	// Use this for initialization

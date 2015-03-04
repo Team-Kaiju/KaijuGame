@@ -2,7 +2,8 @@ fileFormatVersion: 2
 guid: 27950385ff0f3ee4fb1c2d9c4b56ff39
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - rubbleObject: {fileID: 100002, guid: b123594c63650b24b82f799fcd0310e6, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

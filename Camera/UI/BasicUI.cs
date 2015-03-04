@@ -15,7 +15,7 @@ public class BasicUI : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		scoreTxt.text = "Score: " + manager.totalScore;
+		scoreTxt.text = "Score: " + manager.totalScore + " / " + manager.targetScores[0];
 		string time = string.Format("{0}:{1}", Mathf.FloorToInt((manager.timeLimit - Time.timeSinceLevelLoad)/60).ToString("00"), Mathf.FloorToInt((manager.timeLimit - Time.timeSinceLevelLoad)%60).ToString("00"));
 		timeTxt.text = "Time: " + time;
 	}
