@@ -10,12 +10,12 @@ public class ObjDestroyable : MonoBehaviour
 	protected float maxHealth = 100;
 	public float health = 100;
 
-	public void Start()
+	public virtual void Start()
 	{
 		maxHealth = health;
 	}
 
-	public void Update()
+	public virtual void Update()
 	{
 		health = Mathf.Clamp(health, 0F, maxHealth); // Keep things within reasonable range
 
@@ -44,6 +44,11 @@ public class ObjDestroyable : MonoBehaviour
 	{
 		return health;
 	}
+	
+	public float GetMaxHealth()
+	{
+		return maxHealth;
+	}
 
 	public void AddHealth(float amount)
 	{
@@ -63,6 +68,7 @@ public class ObjDestroyable : MonoBehaviour
 	{
 		BULLET,
 		MELEE,
-		EXPLODE
+		EXPLODE,
+		CRUSH
 	}
 }

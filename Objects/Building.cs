@@ -34,7 +34,38 @@ public class Building : ObjDestroyable {
 				debris.collider.enabled = false;
 			}
 		}
-		Debug.Log("Debris Size: " + debrisList.Length);
+
+		if(true && debrisList.Length > 1) // Sort pieces from top down
+		{
+			ArrayList sorted = new ArrayList();
+
+			sorted.AddRange(debrisList);
+
+			for(int i = 1; i < sorted.Count; i++)
+			{
+				ObjDebris obj = (ObjDebris)sorted[i];
+
+				int j = i;
+				ObjDebris prevObj = obj;
+
+				while(j > 0 && prevObj.transform.position.y >= obj.transform.position.y)
+				{
+					j--;
+					prevObj = (ObjDebris)sorted[j];
+				}
+
+				if(j >= 0 && j != i)
+				{
+					sorted.RemoveAt(i);
+					sorted.Insert(j, obj);
+				}
+			}
+
+			for(int i = 0; i < sorted.Count; i++)
+			{
+				debrisList[i] = (ObjDebris)sorted[i];
+			}
+		}
 	}
 
 	public void Update()
@@ -110,7 +141,11 @@ public class Building : ObjDestroyable {
 		{
 			GameObject tmp = GameObject.Instantiate(rubbleObject, this.transform.position, this.transform.rotation) as GameObject;
 		}
-		manager.totalScore += pointWorth;
+		
+		if(manager != null)
+		{
+			manager.totalScore += pointWorth;
+		}
 		GameObject.Destroy(this.gameObject);
 	}
 }

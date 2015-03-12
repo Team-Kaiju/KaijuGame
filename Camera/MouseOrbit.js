@@ -36,6 +36,12 @@ function LateUpdate () {
         
         transform.rotation = Quaternion.Lerp(transform.rotation, rotation, smoothingFactor);
         transform.position = Vector3.Lerp(transform.position, position, smoothingFactor);
+        
+        var hitInfo : RaycastHit;
+        if(Physics.Raycast(target.transform.position, (this.transform.position - target.transform.position).normalized, hitInfo, distance))
+        {
+        	transform.position = hitInfo.point;
+        }
     }
 }
 

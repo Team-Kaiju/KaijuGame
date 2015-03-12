@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class BasicPlayer : MonoBehaviour
+public class BasicPlayer : ObjDestroyable
 {
 	public GameObject rArmCol;
 	public GameObject cam;
@@ -34,7 +34,7 @@ public class BasicPlayer : MonoBehaviour
 		Vector3 right = new Vector3(forward.z, 0, -forward.x);
 		Vector3 moveDirection = (hSpeed * right + vSpeed * forward).normalized;
 
-		moveDirection *= moveSpeed;
+		moveDirection *= moveSpeed * (Input.GetButton("Sprint")? 2F : 1F);
 		this.rigidbody.AddForce(Vector3.down * gravity);
 		this.rigidbody.velocity = Vector3.Lerp(this.rigidbody.velocity, new Vector3(moveDirection.x, this.rigidbody.velocity.y, moveDirection.z), decelFactor);
 		this.rigidbody.angularVelocity = Vector3.zero;
