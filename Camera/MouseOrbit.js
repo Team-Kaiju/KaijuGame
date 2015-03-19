@@ -9,6 +9,8 @@ var yMaxLimit = 80;
 
 var smoothingFactor = 0.5F;
 
+var avoidLayer : LayerMask;
+
 private var x = 0.0;
 private var y = 0.0;
 
@@ -38,7 +40,7 @@ function LateUpdate () {
         transform.position = Vector3.Lerp(transform.position, position, smoothingFactor);
         
         var hitInfo : RaycastHit;
-        if(Physics.Raycast(target.transform.position, (this.transform.position - target.transform.position).normalized, hitInfo, distance))
+        if(Physics.Raycast(target.transform.position, (this.transform.position - target.transform.position).normalized, hitInfo, distance, avoidLayer))
         {
         	transform.position = hitInfo.point;
         }

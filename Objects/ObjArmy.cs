@@ -9,6 +9,7 @@ public class ObjArmy : ObjDestroyable
 	public float fireRate = 1F;
 	float reloadTime = 0F;
 	public float attackDistance = 50F;
+	public float gunHeight = 1F;
 	public AudioClip attackSound;
 	// Use this for initialization
 	void Start()
@@ -19,7 +20,7 @@ public class ObjArmy : ObjDestroyable
 
 		if(navigation != null)
 		{
-			navigation.stoppingDistance = attackDistance *0.99F;
+			navigation.stoppingDistance = attackDistance *0.75F;
 		}
 	}
 	
@@ -40,37 +41,47 @@ public class ObjArmy : ObjDestroyable
 			}
 			
 			this.transform.LookAt(new Vector3(player.transform.position.x, this.transform.position.y, player.transform.position.z));
+			
+			Vector3 targetPos = player.transform.position + (Vector3.up * 10F);
+			Vector3 firePos = this.transform.position + (Vector3.up * gunHeight);
 
-			if(Vector3.Distance(player.transform.position, this.transform.position) <= attackDistance && reloadTime <= 0F)
+			if(Vector3.Distance(targetPos, firePos) <= attackDistance && reloadTime <= 0F)
 			{
-				RaycastHit[] hitInfo = Physics.RaycastAll(transform.position, (player.transform.position - transform.position).normalized, Vector3.Distance(player.transform.position, transform.position));
+				RaycastHit[] hitInfo = Physics.RaycastAll(firePos, (targetPos - firePos).normalized, Vector3.Distance(targetPos, firePos));
 				bool flag = true;
 				foreach(RaycastHit hit in hitInfo)
 				{
-					if(hit.transform.gameObject != player && hit.transform.gameObject != this.gameObject)
+					if(hit.transform.gameObject != player.gameObject && hit.transform.gameObject != this.gameObject && hit.transform.gameObject.collider != null)
 					{
 						flag = false;
 						break;
 					}
 				}
+				
+				reloadTime = 1F/fireRate;
 
 				if(flag)
 				{
-					reloadTime = 1F/fireRate;
 					player.AttackObj(this.gameObject, ObjDestroyable.DamageType.EXPLODE, this.damage);
 					
 					if(attackSound != null)
 					{
-						AudioSource.PlayClipAtPoint(attackSound, this.transform.position);
+						AudioSource.PlayClipAtPoint(attackSound, firePos);
 					}
-				} else
-				{
-					reloadTime = 1F/fireRate;
 				}
 			}
 		} else if(navigation != null)
 		{
+			player = FindObjectOfType<BasicPlayer> ();
 			navigation.ResetPath();
+		} else
+		{
+			navigation = this.GetComponent<NavMeshAgent> ();
+			
+			if(navigation != null)
+			{
+				navigation.stoppingDistance = attackDistance *0.75F;
+			}
 		}
 	}
 }

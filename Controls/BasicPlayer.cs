@@ -10,7 +10,7 @@ public class BasicPlayer : ObjDestroyable
 	public float decelFactor = 0.01F;
 	public float jumpCooldown = 1F;
 	float curJmpCool = 0F;
-	int punchTick = 0;
+	float punchTick = 0;
 	Vector3 punchPos;
 	public float gravity = 1F;
 	[HideInInspector]
@@ -19,12 +19,14 @@ public class BasicPlayer : ObjDestroyable
 	// Use this for initialization
 	void Start()
 	{
+		base.Start();
 		punchPos = rArmCol.transform.localPosition;
 	}
 	
 	// Update is called once per frame
 	void Update()
 	{
+		base.Update();
 		float vSpeed = Input.GetAxis ("Vertical");
 		float hSpeed = Input.GetAxis("Horizontal");
 
@@ -64,7 +66,7 @@ public class BasicPlayer : ObjDestroyable
 			rArmCol.transform.localPosition = punchPos + new Vector3(0F, 0F, Mathf.Sin(Mathf.Deg2Rad * punchTick/10 * 180) * 30F);
 			rArmCol.renderer.enabled = true;
 			rArmCol.collider.enabled = true;
-			punchTick--;
+			punchTick -= 60 * Time.deltaTime;
 		} else if(Input.GetButton ("Fire1"))
 		{
 			rArmCol.collider.enabled = false;

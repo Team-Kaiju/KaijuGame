@@ -64,7 +64,7 @@ public class BuildingSpawnNode : MonoBehaviour
 					}
 				}
 				
-				GameObject build = buildings.Length > 1? buildings[Random.Range(0, buildings.Length - 1)] : buildings[0];
+				GameObject build = buildings.Length > 1? buildings[Random.Range(0, buildings.Length)] : buildings[0];
 				GameObject tmp = GameObject.Instantiate(build, spawnPos, build.transform.rotation) as GameObject;
 				tmp.name = build.name;
 			}
