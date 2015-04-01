@@ -10,7 +10,7 @@ public class BasicUI : MonoBehaviour {
 	public Text destroyableTxt;
 	GameManager manager;
 	BasicPlayer player;
-	Camera camera;
+	Camera cam;
 	string[] scoreLvls = new string[]{"Bronze", "Silver", "Gold"};
 	int scoreIdx = 0;
 
@@ -19,7 +19,7 @@ public class BasicUI : MonoBehaviour {
 	{
 		manager = GameObject.FindObjectOfType<GameManager>();
 		player = GameObject.FindObjectOfType<BasicPlayer>();
-		camera = GameObject.FindObjectOfType<Camera>();
+		cam = GameObject.FindObjectOfType<Camera>();
 	}
 	
 	// Update is called once per frame
@@ -38,7 +38,7 @@ public class BasicUI : MonoBehaviour {
 		timeTxt.text = "Time: " + time;
 		healthTxt.text = player.GetHealth() + " / " + player.GetMaxHealth() + " HP";
 		RaycastHit hitInfo;
-		if(Physics.Raycast(camera.transform.position, camera.transform.TransformDirection(Vector3.forward), out hitInfo, 500F))
+		if(Physics.Raycast(cam.transform.position, cam.transform.TransformDirection(Vector3.forward), out hitInfo, 500F))
 		{
 			ObjDestroyable obj = hitInfo.transform.gameObject.GetComponent<ObjDestroyable>();
 			

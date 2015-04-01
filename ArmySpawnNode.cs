@@ -21,7 +21,12 @@ public class ArmySpawnNode : MonoBehaviour
 			spawnTime = spawnInterval;
 			spawn--;
 			GameObject vehicle = armyVehicles[Random.Range(0, armyVehicles.Length - 1)];
-			GameObject.Instantiate(vehicle, transform.position, vehicle.transform.rotation);
+			NavMeshHit navHit;
+			
+			if(NavMesh.SamplePosition(transform.position, out navHit, 100, 1)) // Nessecary for NavMesh bug/quirk
+			{
+				GameObject.Instantiate(vehicle, navHit.position, vehicle.transform.rotation);
+			}
 		} else
 		{
 			spawnTime -= Time.deltaTime;

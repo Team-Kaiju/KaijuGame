@@ -37,6 +37,11 @@ public class GameManager : MonoBehaviour {
 		{
 			foreach(GameObject gameObj in cullingList)
 			{
+				if(gameObj == null)
+				{
+					cullingList.Remove(gameObj);
+					continue;
+				}
 				camPlanes = GeometryUtility.CalculateFrustumPlanes(cullingCam);
 				if(!GeometryUtility.TestPlanesAABB(camPlanes, gameObj.GetComponent<Collider>().bounds))
 				{

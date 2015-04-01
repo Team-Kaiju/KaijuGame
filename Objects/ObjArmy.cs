@@ -12,10 +12,11 @@ public class ObjArmy : ObjDestroyable
 	public float gunHeight = 1F;
 	public AudioClip attackSound;
 	// Use this for initialization
-	void Start()
+	public override void Start()
 	{
 		base.Start();
 		navigation = this.GetComponent<NavMeshAgent> ();
+		//navigation.enabled = true;
 		player = FindObjectOfType<BasicPlayer> ();
 
 		if(navigation != null)
@@ -25,9 +26,12 @@ public class ObjArmy : ObjDestroyable
 	}
 	
 	// Update is called once per frame
-	void Update()
+	public override void Update()
 	{
 		base.Update();
+		
+		navigation.enabled = true;
+		
 		if(reloadTime > 0F)
 		{
 			reloadTime = Mathf.Clamp(reloadTime - Time.deltaTime, 0F, float.MaxValue);

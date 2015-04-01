@@ -17,14 +17,14 @@ public class BasicPlayer : ObjDestroyable
 	public bool onGround = false;
 
 	// Use this for initialization
-	void Start()
+	public override void Start()
 	{
 		base.Start();
 		punchPos = rArmCol.transform.localPosition;
 	}
 	
 	// Update is called once per frame
-	void Update()
+	public override void Update()
 	{
 		base.Update();
 		float vSpeed = Input.GetAxis ("Vertical");

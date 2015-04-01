@@ -5,7 +5,7 @@ public class Lightning : MonoBehaviour
 {
 	public float minInterval = 3F;
 	public float maxInterval = 10F;
-	public Light light;
+	public Light flashLight;
 	public AudioClip[] lightningSounds;
 	float timer;
 	float origInt = 1F;
@@ -15,9 +15,9 @@ public class Lightning : MonoBehaviour
 	{
 		timer = Random.Range(minInterval, maxInterval);
 		
-		if(light != null)
+		if(flashLight != null)
 		{
-			origInt = light.intensity;
+			origInt = flashLight.intensity;
 		}
 	}
 	
@@ -30,9 +30,9 @@ public class Lightning : MonoBehaviour
 		{
 			timer = Random.Range(minInterval, maxInterval);
 			
-			if(light != null)
+			if(flashLight != null)
 			{
-				light.intensity = 1F;
+				flashLight.intensity = 1F;
 				if(lightningSounds != null && lightningSounds.Length > 0)
 				{
 					AudioSource.PlayClipAtPoint(lightningSounds[Random.Range(0, lightningSounds.Length - 1)], this.transform.position);
@@ -40,9 +40,9 @@ public class Lightning : MonoBehaviour
 			}
 		} else
 		{
-			if(light != null)
+			if(flashLight != null)
 			{
-				light.intensity = origInt;
+				flashLight.intensity = origInt;
 			}
 		}
 	}

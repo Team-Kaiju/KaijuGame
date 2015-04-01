@@ -12,7 +12,7 @@ public class Building : ObjDestroyable {
 	public float debrisPercent = 0.5F; // Percentage of the attached pieces that will fall off before full destruction
 	public float breakForce = 10F;
 
-	public void Start()
+	public override void Start()
 	{
 		base.Start ();
 		manager = GameObject.FindObjectOfType<GameManager>();
@@ -74,7 +74,7 @@ public class Building : ObjDestroyable {
 		}
 	}
 
-	public void Update()
+	public override void Update()
 	{
 		base.Update();
 		if(lastHealth != health)
@@ -145,7 +145,7 @@ public class Building : ObjDestroyable {
 
 		if(rubbleObject != null)
 		{
-			GameObject tmp = GameObject.Instantiate(rubbleObject, this.transform.position, this.transform.rotation) as GameObject;
+			GameObject.Instantiate(rubbleObject, this.transform.position, this.transform.rotation);
 		}
 		
 		if(manager != null)
