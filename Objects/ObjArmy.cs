@@ -51,7 +51,7 @@ public class ObjArmy : ObjDestroyable
 				bool flag = true;
 				foreach(RaycastHit hit in hitInfo)
 				{
-					if(hit.transform.gameObject != player.gameObject && hit.transform.gameObject != this.gameObject && hit.transform.gameObject.collider != null)
+					if(hit.transform.gameObject != player.gameObject && hit.transform.gameObject != this.gameObject && hit.transform.gameObject.GetComponent<Collider>() != null)
 					{
 						flag = false;
 						break;

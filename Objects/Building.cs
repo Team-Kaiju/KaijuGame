@@ -18,20 +18,26 @@ public class Building : ObjDestroyable {
 		manager = GameObject.FindObjectOfType<GameManager>();
 		lastHealth = 100;
 		debrisList = this.GetComponentsInChildren<ObjDebris>(); // Get all marked debris pieces in child objects
+		
+		if(manager != null)
+		{
+			manager.RegisterCulling(this.gameObject);
+		}
+		
 		for(int i = 0; i < debrisList.Length; i++)
 		{
 			ObjDebris debris = debrisList[i];
 			debris.enabled = false;
-			debris.rigidbody.useGravity = false;
+			debris.GetComponent<Rigidbody>().useGravity = false;
 
 			foreach(ParticleSystem ps in debris.GetComponentsInChildren<ParticleSystem>())
 			{
 				ps.Stop(true);
 			}
 
-			if(debris.collider != null)
+			if(debris.GetComponent<Collider>() != null)
 			{
-				debris.collider.enabled = false;
+				debris.GetComponent<Collider>().enabled = false;
 			}
 		}
 
@@ -84,19 +90,19 @@ public class Building : ObjDestroyable {
 					debrisList[index] = null; // Remove it from the list
 					debris.creationTime = Time.timeSinceLevelLoad + Random.Range(-3F,3F); // Set the time the debris was broken off
 					debris.enabled = true; // Enable the debris script
-					debris.rigidbody.useGravity = true; // Enable gravity
+					debris.GetComponent<Rigidbody>().useGravity = true; // Enable gravity
 					
 					foreach(ParticleSystem ps in debris.GetComponentsInChildren<ParticleSystem>())
 					{
 						ps.Play(true);
 					}
 
-					if(debris.collider != null)
+					if(debris.GetComponent<Collider>() != null)
 					{
-						debris.collider.enabled = true;
+						debris.GetComponent<Collider>().enabled = true;
 					}
 					debris.transform.SetParent(null); // Detatch from main building
-					debris.rigidbody.AddForce((debris.transform.position - this.transform.position).normalized * breakForce, ForceMode.Impulse); // Throw object relative to building origin
+					debris.GetComponent<Rigidbody>().AddForce((debris.transform.position - this.transform.position).normalized * breakForce, ForceMode.Impulse); // Throw object relative to building origin
 					if(debrisSounds != null && debrisSounds.Length > 0)
 					{
 						AudioSource.PlayClipAtPoint(debrisSounds[Random.Range(0, debrisSounds.Length - 1)], debris.transform.position);
@@ -122,19 +128,19 @@ public class Building : ObjDestroyable {
 			debrisList[i] = null; // Remove it from the list
 			debris.creationTime = Time.timeSinceLevelLoad + Random.Range(-3F,3F); // Set the time the debris was broken off
 			debris.enabled = true; // Enable the debris script
-			debris.rigidbody.useGravity = true; // Enable gravity
+			debris.GetComponent<Rigidbody>().useGravity = true; // Enable gravity
 			
 			foreach(ParticleSystem ps in debris.GetComponentsInChildren<ParticleSystem>())
 			{
 				ps.Play(true);
 			}
 
-			if(debris.collider != null)
+			if(debris.GetComponent<Collider>() != null)
 			{
-				debris.collider.enabled = true;
+				debris.GetComponent<Collider>().enabled = true;
 			}
 			debris.transform.SetParent(null); // Detatch from main building
-			debris.rigidbody.AddForce((debris.transform.position - this.transform.position).normalized * breakForce, ForceMode.Impulse); // Throw object relative to building origin
+			debris.GetComponent<Rigidbody>().AddForce((debris.transform.position - this.transform.position).normalized * breakForce, ForceMode.Impulse); // Throw object relative to building origin
 		}
 
 		if(rubbleObject != null)

@@ -37,9 +37,9 @@ public class BasicPlayer : ObjDestroyable
 		Vector3 moveDirection = (hSpeed * right + vSpeed * forward).normalized;
 
 		moveDirection *= moveSpeed * (Input.GetButton("Sprint")? 2F : 1F);
-		this.rigidbody.AddForce(Vector3.down * gravity);
-		this.rigidbody.velocity = Vector3.Lerp(this.rigidbody.velocity, new Vector3(moveDirection.x, this.rigidbody.velocity.y, moveDirection.z), decelFactor);
-		this.rigidbody.angularVelocity = Vector3.zero;
+		this.GetComponent<Rigidbody>().AddForce(Vector3.down * gravity);
+		this.GetComponent<Rigidbody>().velocity = Vector3.Lerp(this.GetComponent<Rigidbody>().velocity, new Vector3(moveDirection.x, this.GetComponent<Rigidbody>().velocity.y, moveDirection.z), decelFactor);
+		this.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
 
 		onGround = Physics.Raycast(transform.position + (Vector3.up * 0.5F), Vector3.down, 3F);
 
@@ -54,7 +54,7 @@ public class BasicPlayer : ObjDestroyable
 		if (Input.GetButtonDown ("Jump") && onGround && curJmpCool <= 0F)
 		{
 			curJmpCool = jumpCooldown;
-			this.rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+			this.GetComponent<Rigidbody>().AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
 		} else if(onGround && curJmpCool > 0F)
 		{
 			curJmpCool -= Time.deltaTime;
@@ -64,18 +64,18 @@ public class BasicPlayer : ObjDestroyable
 		if(punchTick > 0)
 		{
 			rArmCol.transform.localPosition = punchPos + new Vector3(0F, 0F, Mathf.Sin(Mathf.Deg2Rad * punchTick/10 * 180) * 30F);
-			rArmCol.renderer.enabled = true;
-			rArmCol.collider.enabled = true;
+			rArmCol.GetComponent<Renderer>().enabled = true;
+			rArmCol.GetComponent<Collider>().enabled = true;
 			punchTick -= 60 * Time.deltaTime;
 		} else if(Input.GetButton ("Fire1"))
 		{
-			rArmCol.collider.enabled = false;
+			rArmCol.GetComponent<Collider>().enabled = false;
 			punchTick = 10;
 		} else
 		{
 			rArmCol.transform.localPosition = punchPos;
 			//rArmCol.renderer.enabled = false;
-			rArmCol.collider.enabled = false;
+			rArmCol.GetComponent<Collider>().enabled = false;
 		}
 	}
 }
