@@ -105,7 +105,7 @@ public class Building : ObjDestroyable {
 					debris.GetComponent<Rigidbody>().AddForce((debris.transform.position - this.transform.position).normalized * breakForce, ForceMode.Impulse); // Throw object relative to building origin
 					if(debrisSounds != null && debrisSounds.Length > 0)
 					{
-						AudioSource.PlayClipAtPoint(debrisSounds[Random.Range(0, debrisSounds.Length - 1)], debris.transform.position);
+						AudioSource.PlayClipAtPoint(debrisSounds[Random.Range(0, debrisSounds.Length - 1)], debris.transform.position, 0.25F);
 					}
 				}
 			}

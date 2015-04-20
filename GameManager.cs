@@ -4,12 +4,14 @@ using System.Collections;
 public class GameManager : MonoBehaviour {
 	[HideInInspector]
 	public int totalScore = 0;
-	public int[] targetScores = new int[]{2500, 10000, 50000};
+	public int[] targetScores = new int[]{2500, 5000, 10000};
 	public float timeLimit = 60 * 5; // Time limit in seconds. Default 5 minutes
 	BasicPlayer player;
 	ArrayList cullingList;
 	public Camera cullingCam;
 	Plane[] camPlanes;
+	
+	IEnumerator routine;
 	
 	// Use this for initialization
 	void Start ()
@@ -25,7 +27,8 @@ public class GameManager : MonoBehaviour {
 	{
 		if(Input.GetKeyDown(KeyCode.Escape))
 		{
-			Application.Quit();
+			Application.LoadLevel("TitleScene");
+			return;
 		}
 		
 		if(Time.timeSinceLevelLoad >= timeLimit || player == null)
@@ -33,34 +36,58 @@ public class GameManager : MonoBehaviour {
 			GameOver();
 		}
 		
-		if(player != null)
+		if(player != null && routine == null)
 		{
-			foreach(GameObject gameObj in cullingList)
-			{
-				if(gameObj == null)
-				{
-					cullingList.Remove(gameObj);
-					continue;
-				}
-				camPlanes = GeometryUtility.CalculateFrustumPlanes(cullingCam);
-				if(!GeometryUtility.TestPlanesAABB(camPlanes, gameObj.GetComponent<Collider>().bounds))
-				{
-					gameObj.SetActive(false);
-				} else
-				{
-					gameObj.SetActive(true);
-				}
-			}
+			cullingList.Remove(null);
+			routine = CullObjects(cullingList);
+			StartCoroutine(routine);
 		}
+	}
+	
+	IEnumerator CullObjects(ArrayList list)
+	{
+		foreach(GameObject gameObj in list)
+		{
+			if(gameObj == null)
+			{
+				list.Remove(gameObj);
+				continue;
+			}
+			
+			camPlanes = GeometryUtility.CalculateFrustumPlanes(cullingCam);
+			
+			if(!GeometryUtility.TestPlanesAABB(camPlanes, gameObj.GetComponent<Collider>().bounds))
+			{
+				gameObj.SetActive(false);
+            } else
+            {
+                gameObj.SetActive(true);
+            }
+		}
+        
+		routine = null;
+		
+		yield return null;
 	}
 	
 	public void RegisterCulling(GameObject obj)
 	{
 		cullingList.Add(obj);
 	}
-	
-	public void GameOver()
+    
+    public void GameOver()
 	{
-		Application.LoadLevel(Application.loadedLevelName);
+		PlayerPrefs.SetInt("Score", totalScore);
+		
+		for(int i = 0; i < 10; i++)
+		{
+			if(!PlayerPrefs.HasKey("HS_SCORE_" + i) || PlayerPrefs.GetInt("HS_SCORE_" + i) < PlayerPrefs.GetInt("Score")) // Empty or smaller score found
+			{
+				Application.LoadLevel("NewHighscoreScreen");
+				return;
+			}
+		}
+		
+		Application.LoadLevel("HighscoreScene");
 	}
 }

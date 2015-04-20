@@ -46,9 +46,16 @@ public class BuildingSpawnNode : MonoBehaviour
 					GameObject.DestroyImmediate(trans.gameObject);
                 }
             }
-        }
-        
-        for(int i = 0; i < gridSizeX; i++)
+		}
+		
+		StopCoroutine("SpawnBuildings");
+		StartCoroutine("SpawnBuildings", buildings);
+	}
+	
+	// Coroutine for spawning buildings. Cannot be run on a per-frame basis due to size
+	IEnumerator SpawnBuildings(GameObject[] list)
+	{
+		for(int i = 0; i < gridSizeX; i++)
 		{
 			for(int k = 0; k < gridSizeZ; k++)
 			{
@@ -64,11 +71,13 @@ public class BuildingSpawnNode : MonoBehaviour
 					}
 				}
 				
-				GameObject build = buildings.Length > 1? buildings[Random.Range(0, buildings.Length)] : buildings[0];
-				GameObject tmp = GameObject.Instantiate(build, spawnPos, build.transform.rotation) as GameObject;
-				tmp.name = build.name;
-			}
-		}
+				GameObject build = list.Length > 1? list[Random.Range(0, list.Length)] : list[0];
+                GameObject tmp = GameObject.Instantiate(build, spawnPos, build.transform.rotation) as GameObject;
+                tmp.name = build.name;
+                
+                yield return null;
+            }
+        }
 	}
 	
 	void Update()
