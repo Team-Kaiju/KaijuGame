@@ -29,8 +29,20 @@ public class BasicUI : MonoBehaviour {
 		{
 			scoreIdx++;
 		}
-		
-		scoreTxt.text = "Score: " + manager.totalScore + " / " + manager.targetScores[scoreIdx] + " (" + scoreLvls[scoreIdx] + ")";
+
+        int targetScore = 0;
+        string scoreName = "Highscore";
+
+        if(scoreIdx < manager.targetScores.Length)
+        {
+            targetScore = manager.targetScores[scoreIdx];
+            scoreName = scoreLvls[scoreIdx];
+        } else
+        {
+            targetScore = PlayerPrefs.GetInt("HS_SCORE_" + 0);
+        }
+
+        scoreTxt.text = "Score: " + manager.totalScore + " / " + targetScore + " (" + scoreName + ")";
 		
 		
 		

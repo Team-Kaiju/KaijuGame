@@ -17,7 +17,7 @@ public class TitleScript : MonoBehaviour
 		}
 		
 		isLoading = true;
-		StartCoroutine(LoadLevel("PreAlphaDemo"));
+		StartCoroutine(LoadLevel("NewKaiju"));
 	}
 	
 	// Load level coroutine with black screen and progress 

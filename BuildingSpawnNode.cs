@@ -10,9 +10,11 @@ public class BuildingSpawnNode : MonoBehaviour
 	public bool snapToGround = false; // Snap buildings to ground level. Useful for hillsides
 	public float maxSnap = 50F; // Max distance this node will search downward to find ground level
 	public GameObject[] buildings; // List of valid buildings this node can spawn
+    public GameObject[] monuments;
+    public float monumentChance = 0.1F;
 	GameObject bakingBox;
 	float bakeHeight = 100F;
-	
+
 	void Start()
 	{
 		if(buildings == null || buildings.Length <= 0 || !Application.isPlaying)
@@ -48,12 +50,11 @@ public class BuildingSpawnNode : MonoBehaviour
             }
 		}
 		
-		StopCoroutine("SpawnBuildings");
-		StartCoroutine("SpawnBuildings", buildings);
+		StartCoroutine(SpawnBuildings(buildings, monuments));
 	}
 	
 	// Coroutine for spawning buildings. Cannot be run on a per-frame basis due to size
-	IEnumerator SpawnBuildings(GameObject[] list)
+	IEnumerator SpawnBuildings(GameObject[] list, GameObject[] rareList)
 	{
 		for(int i = 0; i < gridSizeX; i++)
 		{
@@ -69,13 +70,15 @@ public class BuildingSpawnNode : MonoBehaviour
 					{
 						spawnPos.y = hitInfo.point.y;
 					}
-				}
+                }
+
+                yield return new WaitForEndOfFrame(); // Separate raycasting frame from instatiation. Saves a lot of processing time
 				
-				GameObject build = list.Length > 1? list[Random.Range(0, list.Length)] : list[0];
+				GameObject build = Random.Range(0F, 1F) > monumentChance? (list.Length > 1? list[Random.Range(0, list.Length)] : list[0]) : (rareList.Length > 1? rareList[Random.Range(0, rareList.Length)] : rareList[0]);
                 GameObject tmp = GameObject.Instantiate(build, spawnPos, build.transform.rotation) as GameObject;
                 tmp.name = build.name;
-                
-                yield return null;
+
+                yield return new WaitForEndOfFrame();
             }
         }
 	}

@@ -1,15 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent(typeof(AudioSource))]
 public class GameManager : MonoBehaviour {
 	[HideInInspector]
 	public int totalScore = 0;
-	public int[] targetScores = new int[]{2500, 5000, 10000};
+	public int[] targetScores = new int[]{1000, 2500, 5000};
 	public float timeLimit = 60 * 5; // Time limit in seconds. Default 5 minutes
 	BasicPlayer player;
 	ArrayList cullingList;
 	public Camera cullingCam;
-	Plane[] camPlanes;
+
+    AudioSource audioSrc;
+    public AudioClip ambianceSound;
 	
 	IEnumerator routine;
 	
@@ -19,7 +22,10 @@ public class GameManager : MonoBehaviour {
 		cullingList = new ArrayList();
 		totalScore = 0;
 		player = GameObject.FindObjectOfType<BasicPlayer>();
-		camPlanes = GeometryUtility.CalculateFrustumPlanes(cullingCam);
+
+        audioSrc = this.GetComponent<AudioSource>();
+        audioSrc.clip = this.ambianceSound;
+        audioSrc.Play();
 	}
 	
 	// Update is called once per frame
@@ -39,22 +45,27 @@ public class GameManager : MonoBehaviour {
 		if(player != null && routine == null)
 		{
 			cullingList.Remove(null);
-			routine = CullObjects(cullingList);
+			routine = CullObjects(cullingList.Clone() as ArrayList);
 			StartCoroutine(routine);
 		}
 	}
 	
 	IEnumerator CullObjects(ArrayList list)
 	{
+        Plane[] camPlanes = GeometryUtility.CalculateFrustumPlanes(cullingCam);
+
 		foreach(GameObject gameObj in list)
 		{
 			if(gameObj == null)
 			{
-				list.Remove(gameObj);
 				continue;
 			}
-			
-			camPlanes = GeometryUtility.CalculateFrustumPlanes(cullingCam);
+
+            if(Vector3.Distance(cullingCam.transform.position, gameObj.transform.position) > cullingCam.farClipPlane)
+            {
+                gameObj.SetActive(false);
+                continue;
+            }
 			
 			if(!GeometryUtility.TestPlanesAABB(camPlanes, gameObj.GetComponent<Collider>().bounds))
 			{
@@ -63,11 +74,11 @@ public class GameManager : MonoBehaviour {
             {
                 gameObj.SetActive(true);
             }
-		}
-        
-		routine = null;
-		
-		yield return null;
+        }
+
+        routine = null;
+
+        yield return null;
 	}
 	
 	public void RegisterCulling(GameObject obj)
