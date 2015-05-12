@@ -2,12 +2,124 @@
 using UnityEngine.UI;
 using System.Collections;
 
+[RequireComponent(typeof(AudioSource))]
 public class TitleScript : MonoBehaviour
 {
-	bool isLoading = false;
+    public GameObject[] pages;
+    [HideInInspector]
+    public static int currentPage = -1;
+    public float flipSpeed;
+
+	bool isLoading = true;
 	public Text progressTxt;
 	public Image loadingScreen;
 	public InputField nameInput;
+    public GameObject splashParent;
+    public Image splashCover;
+    public float splashTime = 10F;
+
+    AudioSource audioSrc;
+    public AudioClip titleMusic;
+
+    // Script reference for the order of the pages. Change if pages are add/removed/moved in the array
+    public enum PageNum
+    {
+        TITLE = 0,
+        HIGHSCORE = 1,
+        OPTIONS = 2,
+        NEW_HIGHSCORE = 3,
+        CREDITS = 4
+    }
+
+    public void Start()
+    {
+        audioSrc = this.GetComponent<AudioSource>();
+    }
+
+    public void Update()
+    {
+        if (currentPage == (int)PageNum.NEW_HIGHSCORE && nameInput != null && Input.GetKeyDown(KeyCode.Return))
+        {
+            SubmitScore();
+            return;
+        }
+
+        if(currentPage == -1)
+        {
+            if(Time.timeSinceLevelLoad < splashTime)
+            {
+                splashParent.SetActive(true);
+                splashCover.enabled = true;
+
+                splashCover.color = new Color(0F, 0F, 0F, Mathf.Sin((Time.timeSinceLevelLoad / splashTime * 360 + 90) * Mathf.Deg2Rad) * 0.5F + 0.5F);
+            } else
+            {
+                splashParent.SetActive(false);
+                splashCover.enabled = false;
+                currentPage = 0;
+                isLoading = false;
+            }
+        } else
+        {
+            if(audioSrc != null && !audioSrc.isPlaying)
+            {
+                audioSrc.loop = true;
+                audioSrc.clip = titleMusic;
+                audioSrc.volume = 0.25F;
+                audioSrc.Play();
+            }
+
+            splashParent.SetActive(false);
+            splashCover.enabled = false;
+
+            for (int i = 0; i < pages.Length; i++ )
+            {
+                GameObject pgObj = pages[i];
+
+                if(pgObj == null)
+                {
+                    continue;
+                }
+
+                RectTransform pgTrans = pgObj.GetComponent<RectTransform>();
+
+                float screenHeight = Screen.height;
+
+                if(i != currentPage)
+                {
+                    if ((pgTrans.anchoredPosition.y > -screenHeight * 2F) && pgObj.activeSelf)
+                    {
+                        pgTrans.Translate(Vector3.up * -Time.deltaTime * flipSpeed);
+                    } else
+                    {
+                        pgObj.SetActive(false);
+                        pgTrans.anchoredPosition = Vector2.up * -screenHeight * 2F;
+                    }
+                } else
+                {
+                    pgObj.SetActive(true);
+                    if (pgTrans.anchoredPosition.y < 0F)
+                    {
+                        pgTrans.Translate(Vector3.up * Time.deltaTime * flipSpeed);
+                    }
+                    else
+                    {
+                        isLoading = false;
+                        pgTrans.anchoredPosition = Vector2.zero;
+                    }
+                }
+            }
+        }
+    }
+
+    public void FlipTo(int page)
+    {
+        if (currentPage != page && !isLoading)
+        {
+            isLoading = true;
+            currentPage = Mathf.Clamp(page, 0, pages.Length - 1);
+        }
+    }
 	
 	public void Play()
 	{
@@ -19,6 +131,11 @@ public class TitleScript : MonoBehaviour
 		isLoading = true;
 		StartCoroutine(LoadLevel("NewKaiju"));
 	}
+
+    public void Quit()
+    {
+        Application.Quit();
+    }
 	
 	// Load level coroutine with black screen and progress 
 	IEnumerator LoadLevel(string levelName)
@@ -38,64 +155,6 @@ public class TitleScript : MonoBehaviour
         progressTxt.text = "";
 		isLoading = false;
 		loadingScreen.enabled = false;
-	}
-    
-    public void Options()
-	{
-		if(isLoading)
-		{
-			return;
-		}
-		
-		Application.LoadLevel("Options_Screen");
-	}
-	
-	public void Credits()
-	{
-		if(isLoading)
-		{
-			return;
-		}
-		
-		Application.LoadLevel("Credits_Screen");
-	}
-	
-	public void Quit()
-	{
-		if(isLoading)
-		{
-			return;
-		}
-		
-		Application.Quit();
-	}
-	
-	public void BackToTitle()
-	{
-		if(isLoading)
-		{
-			return;
-		}
-		
-		Application.LoadLevel("TitleScene");
-	}
-	
-	public void Highscores()
-	{
-		if(isLoading)
-		{
-			return;
-		}
-		
-		Application.LoadLevel("HighscoreScene");
-	}
-	
-	public void Update()
-	{
-		if(nameInput != null && Input.GetKeyDown(KeyCode.Return))
-		{
-			SubmitScore();
-		}
 	}
 	
 	public void SubmitScore()
@@ -133,6 +192,6 @@ public class TitleScript : MonoBehaviour
 			}
 		}
 		
-		Highscores(); // Show highscores
+		FlipTo((int)PageNum.HIGHSCORE); // Show highscores
 	}
 }

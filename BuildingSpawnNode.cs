@@ -14,6 +14,7 @@ public class BuildingSpawnNode : MonoBehaviour
     public float monumentChance = 0.1F;
 	GameObject bakingBox;
 	float bakeHeight = 100F;
+    GameManager manager;
 
 	void Start()
 	{
@@ -50,7 +51,8 @@ public class BuildingSpawnNode : MonoBehaviour
             }
 		}
 		
-		StartCoroutine(SpawnBuildings(buildings, monuments));
+        manager = GameObject.FindObjectOfType<GameManager>();
+		manager.RegisterGenerator(SpawnBuildings(buildings, monuments)); // Register, do not start.
 	}
 	
 	// Coroutine for spawning buildings. Cannot be run on a per-frame basis due to size
@@ -72,13 +74,13 @@ public class BuildingSpawnNode : MonoBehaviour
 					}
                 }
 
-                yield return new WaitForEndOfFrame(); // Separate raycasting frame from instatiation. Saves a lot of processing time
+                yield return null; // Separate raycasting frame from instatiation. Saves a lot of processing time
 				
 				GameObject build = Random.Range(0F, 1F) > monumentChance? (list.Length > 1? list[Random.Range(0, list.Length)] : list[0]) : (rareList.Length > 1? rareList[Random.Range(0, rareList.Length)] : rareList[0]);
                 GameObject tmp = GameObject.Instantiate(build, spawnPos, build.transform.rotation) as GameObject;
                 tmp.name = build.name;
 
-                yield return new WaitForEndOfFrame();
+                yield return null;
             }
         }
 	}

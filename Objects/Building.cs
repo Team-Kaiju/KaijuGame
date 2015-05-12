@@ -11,6 +11,7 @@ public class Building : ObjDestroyable {
 	[Range(0F,1F)]
 	public float debrisPercent = 0.5F; // Percentage of the attached pieces that will fall off before full destruction
 	public float breakForce = 10F;
+    public Renderer undamagedRender;
 
 	public override void Start()
 	{
@@ -32,13 +33,18 @@ public class Building : ObjDestroyable {
             debris.GetComponent<Collider>().enabled = false;
             debris.enabled = false;
 
-            if (this.gameObject.GetComponent<Renderer>() != null)
+            if(undamagedRender == null)
+            {
+                undamagedRender = this.GetComponent<Renderer>();
+            }
+
+            if (undamagedRender != null)
             {
                 debris.gameObject.SetActive(false); // Disable debris till the building is actually damaged
             }
 		}
 
-        StartCoroutine(SortDebris(debrisList)); // This can be done over time, not necessarily right now
+        manager.RegisterGenerator(SortDebris(debrisList)); // This can be done over time, not necessarily right now
 	}
 
     IEnumerator SortDebris(ObjDebris[] list)
@@ -65,14 +71,17 @@ public class Building : ObjDestroyable {
                 {
                     j--;
                     prevObj = (ObjDebris)sorted[j];
-
-                    yield return null;
                 }
 
                 if (j >= 0 && j != i)
                 {
                     sorted.RemoveAt(i);
                     sorted.Insert(j, obj);
+                }
+
+                if (i % 10 == 0)
+                {
+                    yield return null;
                 }
             }
 
@@ -91,9 +100,9 @@ public class Building : ObjDestroyable {
             if(lastHealth == this.maxHealth) // This object is no longer undamaged
             {
                 // Enable all debris renderers and disable undamaged look
-                if (this.GetComponent<Renderer>() != null && debrisList.Length > 0)
+                if (undamagedRender != null && debrisList.Length > 0)
                 {
-                    this.GetComponent<Renderer>().enabled = false;
+                    this.undamagedRender.enabled = false;
 
                     foreach (ObjDebris debris in debrisList)
                     {

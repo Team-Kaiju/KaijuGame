@@ -22,31 +22,31 @@ public class BasicPlayer : ObjDestroyable
     public string attackAnim;
     public string walkAttackAnim;
 
-    Vector3 spawnPoint;
-    Quaternion spawnRotation;
+    GameManager manager;
 
 	// Use this for initialization
 	public override void Start()
 	{
 		base.Start();
 
-        spawnPoint = transform.position;
-        spawnRotation = transform.rotation;
-
 		punchPos = rArmCol.transform.localPosition;
+        manager = GameObject.FindObjectOfType<GameManager>();
 	}
 	
 	// Update is called once per frame
 	public override void Update()
 	{
+        if(!manager.isPlaying)
+        {
+            return;
+        }
+
 		base.Update();
 
-        if(this.transform.position.y <= 50F)
+        if(this.transform.position.y <= 80F)
         {
-            this.transform.position = spawnPoint;
-            this.transform.rotation = spawnRotation;
-            this.GetComponent<Rigidbody>().velocity = Vector3.zero;
-            this.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+            manager.GameOver();
+            return;
         }
 
 		float vSpeed = Input.GetAxis ("Vertical");
@@ -109,7 +109,7 @@ public class BasicPlayer : ObjDestroyable
 		if (Input.GetButtonDown ("Jump") && onGround && curJmpCool <= 0F)
 		{
 			curJmpCool = jumpCooldown;
-			this.GetComponent<Rigidbody>().AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+			//this.GetComponent<Rigidbody>().AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
 		} else if(onGround && curJmpCool > 0F)
 		{
 			curJmpCool -= Time.deltaTime;

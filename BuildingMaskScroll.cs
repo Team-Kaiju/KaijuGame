@@ -21,17 +21,19 @@ public class BuildingMaskScroll : MonoBehaviour
 	
 	public void Update()
 	{
-		mask1.transform.Translate(-Time.deltaTime * scrollSpeed, 0F, 0F);
-		mask2.transform.Translate(-Time.deltaTime * scrollSpeed, 0F, 0F);
-		
-		if(mask1.transform.localPosition.x <= -m1Rect.rect.width)
+        float screenWidth = Screen.width;
+
+        m1Rect.Translate(-Time.deltaTime * scrollSpeed, 0F, 0F);
+        m2Rect.Translate(-Time.deltaTime * scrollSpeed, 0F, 0F);
+
+        if (m1Rect.anchoredPosition.x <= -screenWidth || m1Rect.anchoredPosition.x > m2Rect.anchoredPosition.x)
 		{
-			mask1.transform.localPosition = mask1.transform.localPosition + new Vector3(m1Rect.rect.width*2F, 0F, 0F);
+            m1Rect.anchoredPosition = new Vector3(screenWidth + m2Rect.anchoredPosition.x, 0F, 0F);
 		}
-		
-		if(mask2.transform.localPosition.x <= -m2Rect.rect.width)
+
+        if (m2Rect.anchoredPosition.x <= -screenWidth || m2Rect.anchoredPosition.x > m1Rect.anchoredPosition.x)
 		{
-			mask2.transform.localPosition = mask2.transform.localPosition + new Vector3(m2Rect.rect.width*2F, 0F, 0F);
+            m2Rect.anchoredPosition = new Vector3(screenWidth + m1Rect.anchoredPosition.x, 0F, 0F);
 		}
 	}
 }

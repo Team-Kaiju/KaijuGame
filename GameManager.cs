@@ -7,6 +7,8 @@ public class GameManager : MonoBehaviour {
 	public int totalScore = 0;
 	public int[] targetScores = new int[]{1000, 2500, 5000};
 	public float timeLimit = 60 * 5; // Time limit in seconds. Default 5 minutes
+    [HideInInspector]
+    public float startTime = 0F;
 	BasicPlayer player;
 	ArrayList cullingList;
 	public Camera cullingCam;
@@ -15,6 +17,14 @@ public class GameManager : MonoBehaviour {
     public AudioClip ambianceSound;
 	
 	IEnumerator routine;
+
+    [HideInInspector]
+    public bool isLoading = true;
+    [HideInInspector]
+    public bool isPlaying = false;
+    public int maxGeneratorThreads = 5;
+
+    ArrayList generators = new ArrayList();
 	
 	// Use this for initialization
 	void Start ()
@@ -22,33 +32,68 @@ public class GameManager : MonoBehaviour {
 		cullingList = new ArrayList();
 		totalScore = 0;
 		player = GameObject.FindObjectOfType<BasicPlayer>();
-
-        audioSrc = this.GetComponent<AudioSource>();
-        audioSrc.clip = this.ambianceSound;
-        audioSrc.Play();
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
-		if(Input.GetKeyDown(KeyCode.Escape))
+		if(Input.GetKeyDown(KeyCode.Escape) && !isLoading)
 		{
-			Application.LoadLevel("TitleScene");
-			return;
+            if (isPlaying)
+            {
+                TitleScript.currentPage = (int)TitleScript.PageNum.TITLE;
+                Application.LoadLevel("TitleScene");
+                return;
+            } else
+            {
+                isPlaying = true;
+                audioSrc = this.GetComponent<AudioSource>();
+                audioSrc.clip = this.ambianceSound;
+                audioSrc.Play();
+            }
 		}
 		
-		if(Time.timeSinceLevelLoad >= timeLimit || player == null)
+        if(!isPlaying)
+        {
+            startTime = Time.timeSinceLevelLoad;
+        } else if(Time.timeSinceLevelLoad >= timeLimit + startTime || player == null)
 		{
 			GameOver();
 		}
 		
-		if(player != null && routine == null)
+		if(player != null && routine == null && isPlaying)
 		{
 			cullingList.Remove(null);
 			routine = CullObjects(cullingList.Clone() as ArrayList);
 			StartCoroutine(routine);
 		}
+
+        if(generators.Count > 0 || Time.timeSinceLevelLoad < 1F) // Must have waited a minimum of 1 second before allowing the loading screen to turn off
+        {
+            StepGenerators();
+            isLoading = true;
+        } else
+        {
+            isLoading = false;
+        }
 	}
+
+    public void StepGenerators()
+    {
+        for (int i = Mathf.Min(generators.Count - 1, maxGeneratorThreads - 1); i >= 0; i--)
+        {
+            IEnumerator genRoutine = generators[i] as IEnumerator;
+            if (!genRoutine.MoveNext())
+            {
+                generators.Remove(genRoutine);
+            }
+        }
+    }
+
+    public void RegisterGenerator(IEnumerator genRoutine)
+    {
+        generators.Add(genRoutine);
+    }
 	
 	IEnumerator CullObjects(ArrayList list)
 	{
@@ -88,17 +133,19 @@ public class GameManager : MonoBehaviour {
     
     public void GameOver()
 	{
-		PlayerPrefs.SetInt("Score", totalScore);
+        PlayerPrefs.SetInt("Score", totalScore);
+
+        TitleScript.currentPage = (int)TitleScript.PageNum.HIGHSCORE;
 		
 		for(int i = 0; i < 10; i++)
 		{
 			if(!PlayerPrefs.HasKey("HS_SCORE_" + i) || PlayerPrefs.GetInt("HS_SCORE_" + i) < PlayerPrefs.GetInt("Score")) // Empty or smaller score found
 			{
-				Application.LoadLevel("NewHighscoreScreen");
-				return;
+                TitleScript.currentPage = (int)TitleScript.PageNum.NEW_HIGHSCORE;
+                break;
 			}
 		}
-		
-		Application.LoadLevel("HighscoreScene");
+
+        Application.LoadLevel("TitleScene");
 	}
 }
