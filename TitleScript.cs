@@ -12,7 +12,7 @@ public class TitleScript : MonoBehaviour
 
 	bool isLoading = true;
 	public Text progressTxt;
-	public Image loadingScreen;
+	public GameObject loadingScreen;
 	public InputField nameInput;
     public GameObject splashParent;
     public Image splashCover;
@@ -34,6 +34,7 @@ public class TitleScript : MonoBehaviour
     public void Start()
     {
         audioSrc = this.GetComponent<AudioSource>();
+        isLoading = false;
     }
 
     public void Update()
@@ -48,6 +49,7 @@ public class TitleScript : MonoBehaviour
         {
             if(Time.timeSinceLevelLoad < splashTime)
             {
+                isLoading = true;
                 splashParent.SetActive(true);
                 splashCover.enabled = true;
 
@@ -61,7 +63,7 @@ public class TitleScript : MonoBehaviour
             }
         } else
         {
-            if(audioSrc != null && !audioSrc.isPlaying)
+            if(audioSrc != null && !audioSrc.isPlaying && !isLoading)
             {
                 audioSrc.loop = true;
                 audioSrc.clip = titleMusic;
@@ -104,8 +106,11 @@ public class TitleScript : MonoBehaviour
                     }
                     else
                     {
-                        isLoading = false;
-                        pgTrans.anchoredPosition = Vector2.zero;
+                        if (pgTrans.anchoredPosition != Vector2.zero)
+                        {
+                            isLoading = false;
+                            pgTrans.anchoredPosition = Vector2.zero;
+                        }
                     }
                 }
             }
@@ -127,9 +132,10 @@ public class TitleScript : MonoBehaviour
 		{
 			return;
 		}
-		
+
 		isLoading = true;
 		StartCoroutine(LoadLevel("NewKaiju"));
+        audioSrc.Stop();
 	}
 
     public void Quit()
@@ -141,7 +147,7 @@ public class TitleScript : MonoBehaviour
 	IEnumerator LoadLevel(string levelName)
 	{
 		AsyncOperation gameLoad = Application.LoadLevelAsync(levelName);
-		loadingScreen.enabled = true;
+		loadingScreen.SetActive(true);
         
         while(!gameLoad.isDone)
 		{
@@ -154,7 +160,7 @@ public class TitleScript : MonoBehaviour
         
         progressTxt.text = "";
 		isLoading = false;
-		loadingScreen.enabled = false;
+		loadingScreen.SetActive(false);
 	}
 	
 	public void SubmitScore()

@@ -97,6 +97,16 @@ public class Building : ObjDestroyable {
 		base.Update();
 		if(lastHealth != health)
 		{
+            if(health <= 0)
+            {
+                health = 0;
+            }
+
+            if (manager != null)
+            {
+                manager.totalScore += (int)Mathf.Floor((float)(lastHealth - health)/(float)this.maxHealth * (float)pointWorth);
+            }
+
             if(lastHealth == this.maxHealth) // This object is no longer undamaged
             {
                 // Enable all debris renderers and disable undamaged look
@@ -182,11 +192,7 @@ public class Building : ObjDestroyable {
 		{
 			manager.RegisterCulling(GameObject.Instantiate(rubbleObject, this.transform.position, this.transform.rotation) as GameObject);
 		}
-		
-		if(manager != null)
-		{
-			manager.totalScore += pointWorth;
-		}
+
 		GameObject.Destroy(this.gameObject);
 	}
 }

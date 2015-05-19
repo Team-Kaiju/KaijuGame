@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour {
     [HideInInspector]
     public float startTime = 0F;
 	BasicPlayer player;
-	ArrayList cullingList;
+	ArrayList cullingList = new ArrayList();
 	public Camera cullingCam;
 
     AudioSource audioSrc;
@@ -29,7 +29,6 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
 	{
-		cullingList = new ArrayList();
 		totalScore = 0;
 		player = GameObject.FindObjectOfType<BasicPlayer>();
 	}
@@ -128,6 +127,11 @@ public class GameManager : MonoBehaviour {
 	
 	public void RegisterCulling(GameObject obj)
 	{
+        if(obj == null)
+        {
+            return;
+        }
+
 		cullingList.Add(obj);
 	}
     

@@ -10,13 +10,13 @@ public class BasicUI : MonoBehaviour {
 	public Text destroyableTxt;
 	GameManager manager;
 	BasicPlayer player;
-	Camera cam;
+	public Camera cam;
 
     public Image redTint;
     float lastHealth = 100;
     float lastHitTime = -999;
 
-
+    public GameObject loadingParent;
     public Image loadingScreen;
     public Text loadingText;
     public float tranistionSpeed = 250F;
@@ -29,7 +29,6 @@ public class BasicUI : MonoBehaviour {
 	{
 		manager = GameObject.FindObjectOfType<GameManager>();
 		player = GameObject.FindObjectOfType<BasicPlayer>();
-		cam = GameObject.FindObjectOfType<Camera>();
 
         lastHealth = player.GetHealth();
 	}
@@ -59,19 +58,50 @@ public class BasicUI : MonoBehaviour {
             } else
             {
                 loadingScreen.enabled = false;
+                loadingParent.SetActive(false);
             }
 
             if(loadingText.enabled)
             {
                 loadingText.enabled = false;
             }
+
+            if(Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.LeftAlt))
+            {
+                if(Input.GetKeyDown(KeyCode.Alpha1)) // FULL HEAL
+                {
+                    player.SetHealth(player.GetMaxHealth());
+                }
+                else if(Input.GetKeyDown(KeyCode.Alpha2)) // KILL ALL
+                {
+                    foreach (ObjDestroyable obj in GameObject.FindObjectsOfType<ObjDestroyable>())
+                    {
+                        if(obj.gameObject == player.gameObject)
+                        {
+                            continue;
+                        }
+
+                        obj.AttackObj(player.gameObject, ObjDestroyable.DamageType.EXPLODE, 9999F);
+                    }
+                }
+                else if(Input.GetKeyDown(KeyCode.Alpha3)) // RESET TIME
+                {
+                    manager.startTime = Time.timeSinceLevelLoad;
+                    manager.timeLimit = 5F * 60F;
+                }
+            }
         } else
         {
             loadingText.text = "[Press Esc]";
+            float tmpClr = Mathf.Sin(Time.timeSinceLevelLoad * 2F) * 0.5F + 0.5F;
+            loadingText.color = new Color(1F, tmpClr, tmpClr);
         }
 
         int targetScore = 0;
         string scoreName = "Highscore";
+
+        cam.fieldOfView = GlobalSettings.fov;
+        cam.farClipPlane = GlobalSettings.renderDist;
 
         if(scoreIdx < manager.targetScores.Length)
         {
