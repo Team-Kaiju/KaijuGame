@@ -86,12 +86,13 @@ public class TitleScript : MonoBehaviour
                 RectTransform pgTrans = pgObj.GetComponent<RectTransform>();
 
                 float screenHeight = Screen.height;
+                float screenFactor = screenHeight / 600F;
 
                 if(i != currentPage)
                 {
                     if ((pgTrans.anchoredPosition.y > -screenHeight * 2F) && pgObj.activeSelf)
                     {
-                        pgTrans.Translate(Vector3.up * -Time.deltaTime * flipSpeed);
+                        pgTrans.Translate(Vector3.up * -Time.deltaTime * flipSpeed * screenFactor);
                     } else
                     {
                         pgObj.SetActive(false);
@@ -102,7 +103,7 @@ public class TitleScript : MonoBehaviour
                     pgObj.SetActive(true);
                     if (pgTrans.anchoredPosition.y < 0F)
                     {
-                        pgTrans.Translate(Vector3.up * Time.deltaTime * flipSpeed);
+                        pgTrans.Translate(Vector3.up * Time.deltaTime * flipSpeed * screenFactor);
                     }
                     else
                     {
@@ -183,7 +184,7 @@ public class TitleScript : MonoBehaviour
 			{
 				for(int j = 9; j > i; j--) // Start shifting all scores down to make space
 				{
-					if(PlayerPrefs.HasKey("HS_SCORE_" + j)) // Ensure we don't create actual blank entries. Moves only valid ones
+					if(PlayerPrefs.HasKey("HS_SCORE_" + (j - 1))) // Ensure we don't create actual blank entries. Moves only valid ones
 					{
 						PlayerPrefs.SetInt("HS_SCORE_" + j, PlayerPrefs.GetInt("HS_SCORE_" + (j - 1)));
 						PlayerPrefs.SetString("HS_USER_" + j, PlayerPrefs.GetString("HS_USER_" + (j - 1)));
