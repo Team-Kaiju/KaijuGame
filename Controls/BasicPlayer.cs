@@ -45,6 +45,7 @@ public class BasicPlayer : ObjDestroyable
 
         if(this.transform.position.y <= 80F)
         {
+            manager.totalScore += (int)((Time.timeSinceLevelLoad - manager.startTime)/manager.timeLimit * 1000);
             manager.GameOver();
             return;
         }

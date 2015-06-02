@@ -5,7 +5,7 @@ using System.Collections;
 public class GameManager : MonoBehaviour {
 	[HideInInspector]
 	public int totalScore = 0;
-	public int[] targetScores = new int[]{1000, 2500, 5000};
+	public int[] targetScores = new int[]{2500, 5000, 10000};
 	public float timeLimit = 60 * 5; // Time limit in seconds. Default 5 minutes
     [HideInInspector]
     public float startTime = 0F;
@@ -30,12 +30,16 @@ public class GameManager : MonoBehaviour {
 	void Start ()
 	{
 		totalScore = 0;
-		player = GameObject.FindObjectOfType<BasicPlayer>();
+        player = GameObject.FindObjectOfType<BasicPlayer>();
+        PlayerPrefs.SetInt("Score", 0);
 	}
 	
 	// Update is called once per frame
 	void Update ()
-	{
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
 		if(Input.GetKeyDown(KeyCode.Escape) && !isLoading)
 		{
             if (isPlaying)

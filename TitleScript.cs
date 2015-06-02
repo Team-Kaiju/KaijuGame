@@ -35,6 +35,8 @@ public class TitleScript : MonoBehaviour
     {
         audioSrc = this.GetComponent<AudioSource>();
         isLoading = false;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 
     public void Update()
